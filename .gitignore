@@ -1,0 +1,10 @@
+*.egg
+*.egg-info
+*.pyc
+.DS_Store
+.idea
+._*
+*.swp
+build/*
+dist/*
+venv
