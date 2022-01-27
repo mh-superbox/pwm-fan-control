@@ -1,0 +1,13 @@
+[Unit]
+Description=PWM Fan Control
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pwm-fan-control
+Environment=PYTHONUNBUFFERED=1
+Restart=always
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,28 @@
+# Change the following if you want the script to change the fan speed
+# more/less frequently. Value is in seconds.
+check_interval: 5
+
+# Value is in nanoseconds. 40000ns = 25kHz
+pwm_period: 40000
+
+fan_speed:
+  - speed: 100
+    cpu: 70
+    disk: 55
+  - speed: 70
+    cpu: 65
+    disk: 50
+  - speed: 50
+    cpu: 60
+    disk: 45
+  - speed: 30
+    cpu: 50
+    disk: 40
+  - speed: 10
+    cpu: 40
+    disk: 35
+
+# Disks to monitor
+disk:
+  - /dev/sda
+  - /dev/sdb
