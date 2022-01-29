@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-import argparse
 import logging
-import os
 import subprocess
 import sys
 import time
-import yaml
-from dataclasses import field, is_dataclass
 from dataclasses import dataclass
+from dataclasses import field
+from dataclasses import is_dataclass
 from pathlib import Path
 from typing import List
+
+import yaml
 
 logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 
@@ -37,15 +37,17 @@ class Config(ConfigBase):
     disk: list = field(default_factory=list)
 
     def __post_init__(self):
-        _config: dict = self.get_config("/etc/default/pwm-fan-control.yaml")
+        config_yaml: Path = Path("/sys/class/pwm/pwmchip1")
+
+        _config: dict = self.get_config(config_yaml)
         self.update(_config)
 
     @staticmethod
-    def get_config(path: str) -> dict:
+    def get_config(config_yaml: Path) -> dict:
         _config: dict = {}
 
-        if os.path.exists(path):
-            with open(path) as f:
+        if config_yaml.exists():
+            with open(config_yaml) as f:
                 _config = yaml.load(f, Loader=yaml.FullLoader)
 
         return _config
@@ -96,7 +98,7 @@ class PWMFanControl:
             Active time of the PWM signal in nanoseconds.
         """
         try:
-            with open(self._duty_cycle_path, "r") as f:
+            with open(self._duty_cycle_path) as f:
                 return int(f.read())
         except ValueError as error:
             logger.error(error)
@@ -124,7 +126,7 @@ class PWMFanControl:
             Total period of the PWM signal in nanoseconds.
         """
         try:
-            with open(self._period_path, "r") as f:
+            with open(self._period_path) as f:
                 return int(f.read())
         except ValueError as error:
             logger.error(error)
@@ -146,7 +148,7 @@ class PWMFanControl:
     def _pwmchip_enable(self) -> bool:
         """Get the PWM signal status."""
         try:
-            with open(self._enable_path, "r") as f:
+            with open(self._enable_path) as f:
                 _value = int(f.read())
                 return True if _value == 1 else False
         except ValueError as error:
@@ -176,7 +178,7 @@ class PWMFanControl:
         value : str
             Value is the string "normal" or "inversed".
         """
-        with open(self._polarity_path, "r") as f:
+        with open(self._polarity_path) as f:
             return f.read().replace("\n", "")
 
     @_pwmchip_polarity.setter
@@ -208,7 +210,7 @@ class PWMFanControl:
 
         for thermal_zone in Path("/sys/class/thermal/").glob("thermal_zone*/temp"):
             try:
-                with open(thermal_zone, "r") as f:
+                with open(thermal_zone) as f:
                     cpu_temperatures.append(int(int(f.read()) / 1000))
             except ValueError as error:
                 logger.error(error)
@@ -316,26 +318,13 @@ class PWMFanControl:
             time.sleep(self._config.check_interval)
 
 
-def install_pwm_fan_control():
-    pass
-
-
 def main():
-    parser = argparse.ArgumentParser(description="PWM Fan Control")
-    parser.add_argument("-i", "--install", action="store_true", help="Install PWM Fan Control")
-    args = parser.parse_args()
+    pwm_fan_control = PWMFanControl()
 
-    args = parser.parse_args()
-
-    if args.install:
-        install_pwm_fan_control()
-    else:
-        pwm_fan_control = PWMFanControl()
-
-        try:
-            pwm_fan_control.monitor()
-        except KeyboardInterrupt:
-            sys.exit(0)
+    try:
+        pwm_fan_control.monitor()
+    except KeyboardInterrupt:
+        sys.exit(0)
 
 
 if __name__ == "__main__":

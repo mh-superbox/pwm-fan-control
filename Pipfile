@@ -1,5 +1,5 @@
 [[source]]
-url = "https://pypi.python.org/simple"
+url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
@@ -7,11 +7,12 @@ name = "pypi"
 pyyaml = "*"
 
 [dev-packages]
-flake8-bugbear = "*"
-flake8 = "*"
-types-pyyaml = "*"
-mypy = "*"
 black = "*"
+flake8 = "*"
+flake8-bugbear = "*"
+mypy = "*"
+types-pyyaml = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.8"

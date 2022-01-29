@@ -1,9 +1,0 @@
-global-exclude *.pyc
-global-exclude *.pyc
-global-include .editorconfig
-
-include LICENSE
-
-recursive-include src *.py
-
-exclude .pre-commit-config.yaml
