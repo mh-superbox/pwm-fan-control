@@ -37,7 +37,7 @@ class Config(ConfigBase):
     disk: list = field(default_factory=list)
 
     def __post_init__(self):
-        config_yaml: Path = Path("/sys/class/pwm/pwmchip1")
+        config_yaml: Path = Path("/etc/default/pwm-fan-control.yaml")
 
         _config: dict = self.get_config(config_yaml)
         self.update(_config)
