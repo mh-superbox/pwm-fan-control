@@ -37,18 +37,17 @@ class Config(ConfigBase):
     disk: list = field(default_factory=list)
 
     def __post_init__(self):
-        config_yaml: Path = Path("/etc/default/pwm-fan-control.yaml")
+        config_path: Path = Path("/etc/default/pwm-fan-control.yaml")
 
-        _config: dict = self.get_config(config_yaml)
+        _config: dict = self.get_config(config_path)
         self.update(_config)
 
     @staticmethod
-    def get_config(config_yaml: Path) -> dict:
+    def get_config(config_path: Path) -> dict:
         _config: dict = {}
 
-        if config_yaml.exists():
-            with open(config_yaml) as f:
-                _config = yaml.load(f, Loader=yaml.FullLoader)
+        if config_path.exists():
+            _config = yaml.load(config_path.read_text(), Loader=yaml.FullLoader)
 
         return _config
 
