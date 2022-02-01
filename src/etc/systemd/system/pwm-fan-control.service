@@ -4,7 +4,8 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/pwm-fan-control
+ExecStart=/usr/local/sbin/pwm-fan-control.py
+ExecStartPost=/bin/sh -c "echo $MAINPID > /run/pwm-fan-control.pid"
 Environment=PYTHONUNBUFFERED=1
 Restart=always
 RestartSec=5s
