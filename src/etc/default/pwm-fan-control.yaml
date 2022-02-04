@@ -6,6 +6,9 @@ check_interval: 5
 pwm_period: 40000
 
 fan_speed:
+  # When cpu temperature is greater or equal 70
+  # or disk temperature is greater or equal 55
+  # then the fan speed is set to 100 %
   - speed: 100
     cpu: 70
     disk: 55
