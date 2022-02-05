@@ -1,6 +1,6 @@
 # PWM Fan Control
 
-A simple python script to control the fan from the *RockPro 64* (or from other arm boards).
+A simple python script to control the fan from the [RockPro64](https://www.pine64.org/rockpro64/) (or from other arm boards).
 This script is inspirated by the [armbian forum](https://forum.armbian.com/topic/11086-pwm-fan-on-nanopi-m4/page/2/#comment-110117).
 
 ## Installation
