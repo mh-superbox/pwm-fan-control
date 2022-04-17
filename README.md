@@ -8,7 +8,7 @@ This script is inspirated by the [armbian forum](https://forum.armbian.com/topic
 **Requirements:**
 
 ```shell
-$ apt install python3-yaml smartmontools
+$ apt install python3-yaml smartmontools sensors
 ```
 
 Copy the `pwm-fan-control.py` file:
