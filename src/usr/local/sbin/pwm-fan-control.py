@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 import logging
+import re
 import subprocess
 import sys
 import time
@@ -9,6 +10,7 @@ from dataclasses import field
 from dataclasses import is_dataclass
 from pathlib import Path
 from typing import List
+from typing import Optional
 
 import yaml
 
@@ -208,12 +210,27 @@ class PWMFanControl:
         """
         cpu_temperatures: List[int] = []
 
-        for thermal_zone in Path("/sys/class/thermal/").glob("thermal_zone*/temp"):
+        for chip in [
+            "cpu_thermal-virtual-0",
+            "gpu_thermal-virtual-0",
+        ]:
+            command: str = "sensors"
+
             try:
-                with open(thermal_zone) as f:
-                    cpu_temperatures.append(int(int(f.read()) / 1000))
-            except ValueError as error:
-                logger.error(error)
+                output = subprocess.run([command, "-j", "-u", chip], capture_output=True)
+                output_json: dict = json.loads(output.stdout.decode("utf-8"))
+
+                for key, value in output_json[chip].items():
+                    if t := re.match(r"^temp([0-9]+)$", key):
+                        cpu_temperature: Optional[float] = value.get(f"temp{t.group(1)}_input")
+
+                        if cpu_temperature:
+                            cpu_temperatures.append(int(round(cpu_temperature, 0)))
+            except KeyError:
+                print(f"[Error] Can not read temperature from {chip}")
+                sys.exit(1)
+            except FileNotFoundError:
+                logger.error("No such file or directory: '%s'", command)
                 sys.exit(1)
 
         if cpu_temperatures:
