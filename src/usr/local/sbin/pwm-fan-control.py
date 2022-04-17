@@ -233,16 +233,18 @@ class PWMFanControl:
         disk_temperatures: List[int] = []
 
         for device in self._config.disk:
+            command: str = "smartctl"
+
             try:
-                output = subprocess.run(["smartctl", "-l", "scttempsts", "-j", device], capture_output=True)
+                output = subprocess.run([command, "-A", "-j", device], capture_output=True)
                 output_json: dict = json.loads(output.stdout.decode("utf-8"))
                 current_temperature: int = output_json["temperature"]["current"]
                 disk_temperatures.append(current_temperature)
-            except ValueError as error:
-                logger.error(error)
+            except KeyError:
+                logger.error("Can not read temperature from %s", device)
                 sys.exit(1)
-            except FileNotFoundError as error:
-                logger.error(error)
+            except FileNotFoundError:
+                logger.error("No such file or directory: '%s'", command)
                 sys.exit(1)
 
         if disk_temperatures:
