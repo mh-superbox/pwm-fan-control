@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import json
 import logging
 import subprocess
 import sys
@@ -11,7 +12,7 @@ from typing import List
 
 import yaml
 
-logging.basicConfig(level=logging.INFO, format="%(levelname)s - %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(levelname)s - %(message)s")
 
 logger = logging.getLogger("PWMFanControl")
 
@@ -233,8 +234,10 @@ class PWMFanControl:
 
         for device in self._config.disk:
             try:
-                output = subprocess.run(["hddtemp", device, "--numeric"], capture_output=True)
-                disk_temperatures.append(int(output.stdout.decode("utf-8")))
+                output = subprocess.run(["smartctl", "-l", "scttempsts", "-j", device], capture_output=True)
+                output_json: dict = json.loads(output.stdout.decode("utf-8"))
+                current_temperature: int = output_json["temperature"]["current"]
+                disk_temperatures.append(current_temperature)
             except ValueError as error:
                 logger.error(error)
                 sys.exit(1)
